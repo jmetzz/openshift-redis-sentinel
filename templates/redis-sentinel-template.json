@@ -7,7 +7,7 @@
             "iconClass": "icon-redis",
             "openshift.io/display-name": "Redis Sentinel Cluster (Persistent)",
             "tags": "database,redis",
-            "template.openshift.io/provider-display-name": "eliu"
+            "template.openshift.io/provider-display-name": "jmetzz"
         },
         "name": "redis-sentinel"
     },
@@ -50,9 +50,9 @@
             "kind": "Pod",
             "apiVersion": "v1",
             "metadata": {
-                "name": "redis",
+                "name": "redis-master",
                 "labels": {
-                    "name": "redis",
+                    "name": "redis-master",
                     "redis-sentinel": "true",
                     "role": "master"
                 },
@@ -70,7 +70,7 @@
                 ],
                 "containers": [
                     {
-                        "name": "redis",
+                        "name": "redis-master",
                         "image": "${REDIS_SENTINEL_IMAGE}:${REDIS_SENTINEL_TAG}",
                         "imagePullPolicy": "IfNotPresent",
                         "ports": [
@@ -137,7 +137,7 @@
             "kind": "DeploymentConfig",
             "apiVersion": "v1",
             "metadata": {
-                "name": "redis",
+                "name": "redis-replicas",
                 "annotations": {
                     "template.alpha.openshift.io/wait-for-ready": "true"
                 }
@@ -155,7 +155,7 @@
                         "imageChangeParams": {
                             "automatic": true,
                             "containerNames": [
-                                "redis",
+                                "redis-replicas",
                                 "redis-sentinel"
                             ],
                             "from": {
@@ -165,16 +165,16 @@
                         }
                     }
                 ],
-                "replicas": 2,
+                "replicas": 3,
                 "test": false,
                 "selector": {
-                    "name": "redis"
+                    "name": "redis-replicas"
                 },
                 "template": {
                     "metadata": {
                         "creationTimestamp": null,
                         "labels": {
-                            "name": "redis",
+                            "name": "redis-replicas",
                             "redis-sentinel": "true"
                         }
                     },
@@ -191,7 +191,7 @@
                         ],
                         "containers": [
                             {
-                                "name": "redis",
+                                "name": "redis-replicas",
                                 "image": " ",
                                 "imagePullPolicy": "IfNotPresent",
                                 "ports": [
@@ -262,7 +262,7 @@
                     }
                 ],
                 "selector": {
-                    "name": "redis"
+                    "name": "redis-master"
                 },
                 "type": "ClusterIP",
                 "sessionAffinity": "None"
@@ -316,7 +316,7 @@
                     }
                 ],
                 "selector": {
-                    "name": "redis"
+                    "name": "redis-master"
                 },
                 "type": "LoadBalancer",
                 "sessionAffinity": "None"
@@ -329,7 +329,7 @@
             "displayName": "Redis Docker Image Ref",
             "name": "REDIS_SENTINEL_IMAGE",
             "required": true,
-            "value": "eliu/redis-sentinel"
+            "value": "jmetzz/redis-sentinel"
         },
         {
             "description": "Redis Sentinel docker image tag",

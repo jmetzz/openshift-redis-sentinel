@@ -8,6 +8,6 @@
     }
   },
   "spec": {
-    "dockerImageRepository": "eliu/redis-sentinel"
+    "dockerImageRepository": "jmetzz/redis-sentinel"
   }
 }
